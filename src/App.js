@@ -8,22 +8,15 @@ import Index from "./components/Index";
 import { Router } from "@reach/router"
 import BudgetEntry from './components/BudgetEntry';
 import moment from 'moment';
+import { BudgetEntryProvider } from './BudgetEntryContext';
+import configureStore from "./store";
+import { Provider } from "react-redux";
+
+const store = configureStore();
 
 function App() {
 
-  const [ entries, setEntries ] = useState([]);
-
-  useEffect( () => {
-    const entriesArray = [];
-
-    for (let i = 0; i <= 10; i++) {
-      const entry = { "id" : i+1, "entry_date" : moment().add(1, "day").format(), "total_income" : 30000, "total_expenses" : 25000 };
-      entriesArray.push(entry);
-    }
-
-    setEntries(entriesArray);
-
-  }, []);
+  // const [ entries, setEntries ] = useState([]);
 
   return (
     <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
@@ -32,10 +25,12 @@ function App() {
 
 							if(isSignedIn) {
 								return (
-                  <Router>
-                    <Index firebase={firebase} user={user} path="/" entries={entries} /> 
-                    <BudgetEntry path="entries/:entryId" entries={entries} />
-                  </Router>
+                  <Provider store={store}>
+                    <Router>
+                      <Index firebase={firebase} user={user} path="/" />
+                      <BudgetEntry path="entries/:entryId" />
+                    </Router>
+                  </Provider>
 								);
 							} else {
 								return (
